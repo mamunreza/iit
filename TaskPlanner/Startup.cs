@@ -6,14 +6,25 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using TaskPlanner.Data.Interface;
+using TaskPlanner.Data.Mocks;
+using TaskPlanner.Data.Repository;
+using TaskPlanner.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskPlanner
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private IConfigurationRoot _configurationRoot;
+        public Startup(IHostingEnvironment hostingEnvironment, IConfiguration configuration)
         {
             Configuration = configuration;
+            _configurationRoot = new ConfigurationBuilder()
+                .SetBasePath(hostingEnvironment.ContentRootPath)
+                .AddJsonFile("appsettings.json")
+                .Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -21,22 +32,21 @@ namespace TaskPlanner
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddTransient<ITaskRotationRepository, MockTaskRotationRepository>();
+
             services.AddMvc();
+
+            services.AddDbContext<AppDbContext>(options =>
+                     options.UseSqlServer(Configuration.GetConnectionString("TaskPlannerContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
+            loggerFactory.AddConsole();
+            app.UseDeveloperExceptionPage();
+            app.UseStatusCodePages();
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
