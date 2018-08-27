@@ -62,8 +62,7 @@ namespace TaskPlanner.Migrations
 
             modelBuilder.Entity("TaskPlanner.Models.TaskRotation", b =>
                 {
-                    b.Property<int>("TaskRotationId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("TaskRotationId");
 
                     b.Property<string>("Name")
                         .IsRequired()

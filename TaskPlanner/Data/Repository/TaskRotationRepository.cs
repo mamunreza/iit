@@ -17,13 +17,26 @@ namespace TaskPlanner.Data.Repository
 
         public void Create(TaskRotationViewModel vm)
         {
-            var taskRotation = new TaskRotation
+            var model = new TaskRotation
             {
                 Name = vm.Name
             };
 
-            _appDbContext.TaskRotations.Add(taskRotation);
-            _appDbContext.SaveChangesAsync();
+            _appDbContext.TaskRotations.Add(model);
+            _appDbContext.SaveChanges();
+        }
+
+        public void Edit(TaskRotationViewModel vm)
+        {
+            var entity = _appDbContext.TaskRotations.SingleOrDefault(x => x.TaskRotationId == vm.Id);
+            entity.Name = vm.Name;
+            _appDbContext.SaveChanges();
+        }
+
+        public TaskRotation GetById(int id)
+        {
+            var entity = _appDbContext.TaskRotations.SingleOrDefault(x => x.TaskRotationId == id);
+            return entity;
         }
 
         public ICollection<TaskRotationViewModel> List()
@@ -35,6 +48,7 @@ namespace TaskPlanner.Data.Repository
             {
                 var model = new TaskRotationViewModel
                 {
+                    Id = item.TaskRotationId,
                     Name = item.Name
                 };
                 models.Add(model);

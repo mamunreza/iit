@@ -11,7 +11,7 @@ using TaskPlanner.Data;
 namespace TaskPlanner.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20180826125744_Initial")]
+    [Migration("20180827034033_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,8 +63,7 @@ namespace TaskPlanner.Migrations
 
             modelBuilder.Entity("TaskPlanner.Models.TaskRotation", b =>
                 {
-                    b.Property<int>("TaskRotationId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("TaskRotationId");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskPlanner.Models;
+using TaskPlanner.ViewModels;
 
 namespace TaskPlanner.Data
 {
@@ -19,5 +20,7 @@ namespace TaskPlanner.Data
                 .Property(b => b.Active)
                 .HasDefaultValue(true);
         }
+
+        public DbSet<TaskPlanner.ViewModels.TaskScheduleViewModel> TaskScheduleViewModel { get; set; }
     }
 }

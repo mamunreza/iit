@@ -1,9 +1,11 @@
-﻿@model IEnumerable<TaskPlanner.ViewModels.TaskScheduleViewModel>
+﻿@model IEnumerable<TaskPlanner.ViewModels.TaskViewModel>
 @{
-    ViewData["Title"] = "Task Schedule";
+    ViewData["Title"] = "Tasks";
 }
-<h2>Schedule</h2>
-<h4>Up Coming Tasks</h4>
+<h2>Tasks</h2>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -14,10 +16,7 @@
                 @Html.DisplayNameFor(model => model.DueDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TimeRemaining)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsComplete)
+                @Html.DisplayNameFor(model => model.TaskRotation)
             </th>
             <th></th>
         </tr>
@@ -33,18 +32,14 @@
                     @Html.DisplayFor(modelItem => item.DueDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TimeRemaining)
+                    @Html.DisplayFor(modelItem => item.TaskRotationName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IsComplete)
-                </td>
-                <td>
-                    @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a>*@
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-<p>
-    <a asp-action="MarkAsComplete">Update</a>
-</p>

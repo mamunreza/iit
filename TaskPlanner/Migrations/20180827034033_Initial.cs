@@ -13,8 +13,7 @@ namespace TaskPlanner.Migrations
                 name: "TaskRotations",
                 columns: table => new
                 {
-                    TaskRotationId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TaskRotationId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>

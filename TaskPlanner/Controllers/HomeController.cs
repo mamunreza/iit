@@ -1,18 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using TaskPlanner.Models;
+using TaskPlanner.Data.Interface;
 
 namespace TaskPlanner.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ITaskRepository _repository;
+
+        public HomeController(ITaskRepository repository)
+        {
+            _repository = repository;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            var taskList = _repository.GetTaskSchedule();
+            return View(taskList);
         }
 
         public IActionResult About()
