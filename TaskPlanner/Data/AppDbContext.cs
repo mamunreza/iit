@@ -20,7 +20,5 @@ namespace TaskPlanner.Data
                 .Property(b => b.Active)
                 .HasDefaultValue(true);
         }
-
-        public DbSet<TaskPlanner.ViewModels.TaskScheduleViewModel> TaskScheduleViewModel { get; set; }
     }
 }
