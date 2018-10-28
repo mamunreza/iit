@@ -1,6 +1,6 @@
 using AutoMapper;
 using PrenticeApi.Dtos;
-using PrenticeApi.Entities;
+using PrenticeApi.Models;
 
 namespace PrenticeApi.Helpers
 {
@@ -8,8 +8,8 @@ namespace PrenticeApi.Helpers
     {
         public AutoMapperProfile()
         {
-            CreateMap<User, UserDto>();
-            CreateMap<UserDto, User>();
+            CreateMap<ApplicationUser, UserDto>();
+            CreateMap<UserDto, ApplicationUser>();
         }
     }
 }

@@ -15,6 +15,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using PrenticeApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace PrenticeApi
 {
@@ -34,6 +35,8 @@ namespace PrenticeApi
             // services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestDb"));
             services.AddDbContext<DataContext>(options =>
                      options.UseSqlServer(Configuration.GetConnectionString("DataContext")));
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddEntityFrameworkStores<DataContext>();
             services.AddMvc();
             services.AddAutoMapper();
 
@@ -56,7 +59,7 @@ namespace PrenticeApi
                     OnTokenValidated = context =>
                     {
                         var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
-                        var userId = int.Parse(context.Principal.Identity.Name);
+                        var userId = context.Principal.Identity.Name;
                         var user = userService.GetById(userId);
                         if (user == null)
                         {

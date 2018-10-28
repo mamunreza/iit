@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PrenticeApi.Entities;
 using PrenticeApi.Helpers;
 using PrenticeApi.Models;
 
@@ -9,12 +8,12 @@ namespace PrenticeApi.Services
 {
     public interface IUserService
     {
-        User Authenticate(string username, string password);
-        IEnumerable<User> GetAll();
-        User GetById(int id);
-        User Create(User user, string password);
-        void Update(User user, string password = null);
-        void Delete(int id);
+        ApplicationUser Authenticate(string username, string password);
+        IEnumerable<ApplicationUser> GetAll();
+        ApplicationUser GetById(string id);
+        ApplicationUser Create(ApplicationUser user, string password);
+        void Update(ApplicationUser user, string password = null);
+        void Delete(string id);
     }
 
     public class UserService : IUserService
@@ -26,12 +25,12 @@ namespace PrenticeApi.Services
             _context = context;
         }
 
-        public User Authenticate(string username, string password)
+        public ApplicationUser Authenticate(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = _context.Users.SingleOrDefault(x => x.Username == username);
+            var user = _context.Users.SingleOrDefault(x => x.UserName == username);
 
             // check if username exists
             if (user == null)
@@ -45,24 +44,24 @@ namespace PrenticeApi.Services
             return user;
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<ApplicationUser> GetAll()
         {
             return _context.Users;
         }
 
-        public User GetById(int id)
+        public ApplicationUser GetById(string id)
         {
             return _context.Users.Find(id);
         }
 
-        public User Create(User user, string password)
+        public ApplicationUser Create(ApplicationUser user, string password)
         {
             // validation
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
 
-            if (_context.Users.Any(x => x.Username == user.Username))
-                throw new AppException("Username \"" + user.Username + "\" is already taken");
+            if (_context.Users.Any(x => x.UserName == user.UserName))
+                throw new AppException("Username \"" + user.UserName + "\" is already taken");
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
@@ -76,24 +75,24 @@ namespace PrenticeApi.Services
             return user;
         }
 
-        public void Update(User userParam, string password = null)
+        public void Update(ApplicationUser userParam, string password = null)
         {
             var user = _context.Users.Find(userParam.Id);
 
             if (user == null)
                 throw new AppException("User not found");
 
-            if (userParam.Username != user.Username)
+            if (userParam.UserName != user.UserName)
             {
                 // username has changed so check if the new username is already taken
-                if (_context.Users.Any(x => x.Username == userParam.Username))
-                    throw new AppException("Username " + userParam.Username + " is already taken");
+                if (_context.Users.Any(x => x.UserName == userParam.UserName))
+                    throw new AppException("Username " + userParam.UserName + " is already taken");
             }
 
             // update user properties
             user.FirstName = userParam.FirstName;
             user.LastName = userParam.LastName;
-            user.Username = userParam.Username;
+            user.UserName = userParam.UserName;
 
             // update password if it was entered
             if (!string.IsNullOrWhiteSpace(password))
@@ -109,7 +108,7 @@ namespace PrenticeApi.Services
             _context.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
             var user = _context.Users.Find(id);
             if (user != null)

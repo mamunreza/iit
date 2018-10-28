@@ -11,7 +11,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using PrenticeApi.Services;
 using PrenticeApi.Dtos;
-using PrenticeApi.Entities;
+using PrenticeApi.Models;
 
 namespace PrenticeApi.Controllers
 {
@@ -38,7 +38,7 @@ namespace PrenticeApi.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]UserDto userDto)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
+            var user = _userService.Authenticate(userDto.UserName, userDto.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -60,7 +60,7 @@ namespace PrenticeApi.Controllers
             // return basic user info (without password) and token to store client side
             return Ok(new {
                 Id = user.Id,
-                Username = user.Username,
+                Username = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Token = tokenString
@@ -72,7 +72,7 @@ namespace PrenticeApi.Controllers
         public IActionResult Register([FromBody]UserDto userDto)
         {
             // map dto to entity
-            var user = _mapper.Map<User>(userDto);
+            var user = _mapper.Map<ApplicationUser>(userDto);
 
             try 
             {
@@ -96,7 +96,7 @@ namespace PrenticeApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(string id)
         {
             var user =  _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);
@@ -104,10 +104,10 @@ namespace PrenticeApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDto userDto)
+        public IActionResult Update(string id, [FromBody]UserDto userDto)
         {
             // map dto to entity and set id
-            var user = _mapper.Map<User>(userDto);
+            var user = _mapper.Map<ApplicationUser>(userDto);
             user.Id = id;
 
             try 
@@ -124,7 +124,7 @@ namespace PrenticeApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string id)
         {
             _userService.Delete(id);
             return Ok();
