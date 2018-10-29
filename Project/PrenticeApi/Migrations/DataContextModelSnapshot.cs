@@ -133,6 +133,29 @@ namespace PrenticeApi.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("PrenticeApi.Models.AcademicType", b =>
+                {
+                    b.Property<short>("AcademicTypeId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasMaxLength(3);
+
+                    b.HasKey("AcademicTypeId");
+
+                    b.ToTable("AcademicTypes");
+
+                    b.HasData(
+                        new { AcademicTypeId = (short)1, Name = "Undergraduate Studies", ShortName = "U" },
+                        new { AcademicTypeId = (short)2, Name = "Graduate Studies", ShortName = "G" },
+                        new { AcademicTypeId = (short)3, Name = "Training Programs", ShortName = "T" }
+                    );
+                });
+
             modelBuilder.Entity("PrenticeApi.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -190,6 +213,86 @@ namespace PrenticeApi.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("PrenticeApi.Models.Course", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.HasKey("CourseId");
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.Institution", b =>
+                {
+                    b.Property<short>("InstitutionId");
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("ContactEmail");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<string>("WebSite");
+
+                    b.HasKey("InstitutionId");
+
+                    b.ToTable("Institutions");
+
+                    b.HasData(
+                        new { InstitutionId = (short)1, Address = "IIT, University of Dhaka, Dhaka, Bangladesh", ContactEmail = "iit@du.ac.bd", Name = "Institute of Information Technology, University of Dhaka", PhoneNumber = "8801779482994", ShortName = "IIT, DU", WebSite = "http://www.iit.du.ac.bd" }
+                    );
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.ProgramType", b =>
+                {
+                    b.Property<short>("ProgramTypeId");
+
+                    b.Property<short>("AcademicTypeId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasMaxLength(10);
+
+                    b.HasKey("ProgramTypeId");
+
+                    b.HasIndex("AcademicTypeId");
+
+                    b.ToTable("ProgramTypes");
+
+                    b.HasData(
+                        new { ProgramTypeId = (short)1, AcademicTypeId = (short)1, Name = "Bachelor of Science in Software Engineering", ShortName = "BSSE" },
+                        new { ProgramTypeId = (short)2, AcademicTypeId = (short)2, Name = "Master of Science in Software Engineering", ShortName = "MSSE" },
+                        new { ProgramTypeId = (short)3, AcademicTypeId = (short)2, Name = "Master in Information Technology", ShortName = "MIT" },
+                        new { ProgramTypeId = (short)4, AcademicTypeId = (short)2, Name = "Post Graduate Diploma in Information Technology", ShortName = "PGDIT" },
+                        new { ProgramTypeId = (short)5, AcademicTypeId = (short)3, Name = "Web Design", ShortName = "WD" },
+                        new { ProgramTypeId = (short)6, AcademicTypeId = (short)3, Name = "Web Programming", ShortName = "WP" },
+                        new { ProgramTypeId = (short)7, AcademicTypeId = (short)3, Name = "Office Applications", ShortName = "OA" },
+                        new { ProgramTypeId = (short)8, AcademicTypeId = (short)3, Name = "Matlab-Origin-LaTeX", ShortName = "MOL" }
+                    );
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -232,6 +335,14 @@ namespace PrenticeApi.Migrations
                     b.HasOne("PrenticeApi.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.ProgramType", b =>
+                {
+                    b.HasOne("PrenticeApi.Models.AcademicType", "AcademicType")
+                        .WithMany("ProgramTypes")
+                        .HasForeignKey("AcademicTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
