@@ -213,6 +213,69 @@ namespace PrenticeApi.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("PrenticeApi.Models.Batch", b =>
+                {
+                    b.Property<int>("BatchId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("EndDate");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<short>("ProgramTypeId");
+
+                    b.Property<DateTime>("StartDate");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("BatchId");
+
+                    b.HasIndex("ProgramTypeId");
+
+                    b.ToTable("Batches");
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.BatchTerm", b =>
+                {
+                    b.Property<int>("BatchTermId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BatchId");
+
+                    b.Property<short>("TermTypeId");
+
+                    b.HasKey("BatchTermId");
+
+                    b.HasIndex("BatchId");
+
+                    b.HasIndex("TermTypeId");
+
+                    b.ToTable("BatchTerms");
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.BatchTermCourse", b =>
+                {
+                    b.Property<short>("BatchTermCourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BatchTermId");
+
+                    b.Property<int>("CourseId");
+
+                    b.HasKey("BatchTermCourseId");
+
+                    b.HasIndex("BatchTermId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("BatchTermCourses");
+                });
+
             modelBuilder.Entity("PrenticeApi.Models.Course", b =>
                 {
                     b.Property<int>("CourseId")
@@ -230,6 +293,12 @@ namespace PrenticeApi.Migrations
                     b.HasKey("CourseId");
 
                     b.ToTable("Courses");
+
+                    b.HasData(
+                        new { CourseId = 1, Code = "MITM301", Name = "Project Management and Business Info System" },
+                        new { CourseId = 2, Code = "MITM302", Name = "Computer Programming" },
+                        new { CourseId = 3, Code = "MITM304", Name = "Database Architecture and Administration" }
+                    );
                 });
 
             modelBuilder.Entity("PrenticeApi.Models.Institution", b =>
@@ -275,6 +344,8 @@ namespace PrenticeApi.Migrations
                         .IsRequired()
                         .HasMaxLength(10);
 
+                    b.Property<byte>("Terms");
+
                     b.HasKey("ProgramTypeId");
 
                     b.HasIndex("AcademicTypeId");
@@ -282,14 +353,61 @@ namespace PrenticeApi.Migrations
                     b.ToTable("ProgramTypes");
 
                     b.HasData(
-                        new { ProgramTypeId = (short)1, AcademicTypeId = (short)1, Name = "Bachelor of Science in Software Engineering", ShortName = "BSSE" },
-                        new { ProgramTypeId = (short)2, AcademicTypeId = (short)2, Name = "Master of Science in Software Engineering", ShortName = "MSSE" },
-                        new { ProgramTypeId = (short)3, AcademicTypeId = (short)2, Name = "Master in Information Technology", ShortName = "MIT" },
-                        new { ProgramTypeId = (short)4, AcademicTypeId = (short)2, Name = "Post Graduate Diploma in Information Technology", ShortName = "PGDIT" },
-                        new { ProgramTypeId = (short)5, AcademicTypeId = (short)3, Name = "Web Design", ShortName = "WD" },
-                        new { ProgramTypeId = (short)6, AcademicTypeId = (short)3, Name = "Web Programming", ShortName = "WP" },
-                        new { ProgramTypeId = (short)7, AcademicTypeId = (short)3, Name = "Office Applications", ShortName = "OA" },
-                        new { ProgramTypeId = (short)8, AcademicTypeId = (short)3, Name = "Matlab-Origin-LaTeX", ShortName = "MOL" }
+                        new { ProgramTypeId = (short)1, AcademicTypeId = (short)1, Name = "Bachelor of Science in Software Engineering", ShortName = "BSSE", Terms = (byte)8 },
+                        new { ProgramTypeId = (short)2, AcademicTypeId = (short)2, Name = "Master of Science in Software Engineering", ShortName = "MSSE", Terms = (byte)4 },
+                        new { ProgramTypeId = (short)3, AcademicTypeId = (short)2, Name = "Master in Information Technology", ShortName = "MIT", Terms = (byte)4 },
+                        new { ProgramTypeId = (short)4, AcademicTypeId = (short)2, Name = "Post Graduate Diploma in Information Technology", ShortName = "PGDIT", Terms = (byte)4 },
+                        new { ProgramTypeId = (short)5, AcademicTypeId = (short)3, Name = "Web Design", ShortName = "WD", Terms = (byte)1 },
+                        new { ProgramTypeId = (short)6, AcademicTypeId = (short)3, Name = "Web Programming", ShortName = "WP", Terms = (byte)1 },
+                        new { ProgramTypeId = (short)7, AcademicTypeId = (short)3, Name = "Office Applications", ShortName = "OA", Terms = (byte)1 },
+                        new { ProgramTypeId = (short)8, AcademicTypeId = (short)3, Name = "Matlab-Origin-LaTeX", ShortName = "MOL", Terms = (byte)1 }
+                    );
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.Student", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Dob");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("RegistrationDate");
+
+                    b.Property<string>("RegistrationNo")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<string>("RollNo");
+
+                    b.HasKey("StudentId");
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.TermType", b =>
+                {
+                    b.Property<short>("TermTypeId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.HasKey("TermTypeId");
+
+                    b.ToTable("TermTypes");
+
+                    b.HasData(
+                        new { TermTypeId = (short)1, Name = "None" },
+                        new { TermTypeId = (short)2, Name = "Semester" }
                     );
                 });
 
@@ -335,6 +453,40 @@ namespace PrenticeApi.Migrations
                     b.HasOne("PrenticeApi.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.Batch", b =>
+                {
+                    b.HasOne("PrenticeApi.Models.ProgramType", "ProgramType")
+                        .WithMany("Batches")
+                        .HasForeignKey("ProgramTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.BatchTerm", b =>
+                {
+                    b.HasOne("PrenticeApi.Models.Batch", "Batch")
+                        .WithMany("BatchTerms")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrenticeApi.Models.TermType", "TermType")
+                        .WithMany("BatchTerms")
+                        .HasForeignKey("TermTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.BatchTermCourse", b =>
+                {
+                    b.HasOne("PrenticeApi.Models.BatchTerm", "BatchTerm")
+                        .WithMany("BatchCourses")
+                        .HasForeignKey("BatchTermId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrenticeApi.Models.Course", "Course")
+                        .WithMany("BatchTermCourses")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

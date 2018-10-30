@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using PrenticeApi.Services;
 using PrenticeApi.Dtos;
 using PrenticeApi.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace PrenticeApi.Controllers
 {
@@ -20,11 +22,13 @@ namespace PrenticeApi.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
+        //private readonly UserManager<ApplicationUser> _userManager;
         private IUserService _userService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
         public UsersController(
+            //UserManager<ApplicationUser> userManager,
             IUserService userService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
@@ -32,7 +36,15 @@ namespace PrenticeApi.Controllers
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            //_userManager = userManager;
         }
+
+        // [HttpGet("currentuser")]
+        // public async Task<string> GetCurrentUserId()
+        // {
+        //     ApplicationUser usr = await GetCurrentUserAsync();
+        //     return usr?.Id;
+        // }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
@@ -47,7 +59,7 @@ namespace PrenticeApi.Controllers
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[] 
+                Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
@@ -58,7 +70,8 @@ namespace PrenticeApi.Controllers
             var tokenString = tokenHandler.WriteToken(token);
 
             // return basic user info (without password) and token to store client side
-            return Ok(new {
+            return Ok(new
+            {
                 Id = user.Id,
                 Username = user.UserName,
                 FirstName = user.FirstName,
@@ -74,13 +87,13 @@ namespace PrenticeApi.Controllers
             // map dto to entity
             var user = _mapper.Map<ApplicationUser>(userDto);
 
-            try 
+            try
             {
                 // save 
                 _userService.Create(user, userDto.Password);
                 return Ok();
-            } 
-            catch(AppException ex)
+            }
+            catch (AppException ex)
             {
                 // return error message if there was an exception
                 return BadRequest(new { message = ex.Message });
@@ -90,7 +103,7 @@ namespace PrenticeApi.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users =  _userService.GetAll();
+            var users = _userService.GetAll();
             var userDtos = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDtos);
         }
@@ -98,7 +111,7 @@ namespace PrenticeApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(string id)
         {
-            var user =  _userService.GetById(id);
+            var user = _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);
             return Ok(userDto);
         }
@@ -110,13 +123,13 @@ namespace PrenticeApi.Controllers
             var user = _mapper.Map<ApplicationUser>(userDto);
             user.Id = id;
 
-            try 
+            try
             {
                 // save 
                 _userService.Update(user, userDto.Password);
                 return Ok();
-            } 
-            catch(AppException ex)
+            }
+            catch (AppException ex)
             {
                 // return error message if there was an exception
                 return BadRequest(new { message = ex.Message });
@@ -129,5 +142,8 @@ namespace PrenticeApi.Controllers
             _userService.Delete(id);
             return Ok();
         }
+
+
+        //private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }

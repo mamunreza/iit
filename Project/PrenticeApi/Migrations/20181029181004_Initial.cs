@@ -95,12 +95,43 @@ namespace PrenticeApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Students",
+                columns: table => new
+                {
+                    StudentId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FirstName = table.Column<string>(maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(maxLength: 50, nullable: false),
+                    RegistrationNo = table.Column<string>(maxLength: 20, nullable: false),
+                    RegistrationDate = table.Column<DateTime>(nullable: false),
+                    RollNo = table.Column<string>(nullable: true),
+                    Dob = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Students", x => x.StudentId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TermTypes",
+                columns: table => new
+                {
+                    TermTypeId = table.Column<short>(nullable: false),
+                    Name = table.Column<string>(maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TermTypes", x => x.TermTypeId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProgramTypes",
                 columns: table => new
                 {
                     ProgramTypeId = table.Column<short>(nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     ShortName = table.Column<string>(maxLength: 10, nullable: false),
+                    Terms = table.Column<byte>(nullable: false),
                     AcademicTypeId = table.Column<short>(nullable: false)
                 },
                 constraints: table =>
@@ -220,6 +251,81 @@ namespace PrenticeApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Batches",
+                columns: table => new
+                {
+                    BatchId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 20, nullable: false),
+                    ProgramTypeId = table.Column<short>(nullable: false),
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    EndDate = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Batches", x => x.BatchId);
+                    table.ForeignKey(
+                        name: "FK_Batches_ProgramTypes_ProgramTypeId",
+                        column: x => x.ProgramTypeId,
+                        principalTable: "ProgramTypes",
+                        principalColumn: "ProgramTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BatchTerms",
+                columns: table => new
+                {
+                    BatchTermId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BatchId = table.Column<int>(nullable: false),
+                    TermTypeId = table.Column<short>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BatchTerms", x => x.BatchTermId);
+                    table.ForeignKey(
+                        name: "FK_BatchTerms_Batches_BatchId",
+                        column: x => x.BatchId,
+                        principalTable: "Batches",
+                        principalColumn: "BatchId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BatchTerms_TermTypes_TermTypeId",
+                        column: x => x.TermTypeId,
+                        principalTable: "TermTypes",
+                        principalColumn: "TermTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BatchTermCourses",
+                columns: table => new
+                {
+                    BatchTermCourseId = table.Column<short>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BatchTermId = table.Column<int>(nullable: false),
+                    CourseId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BatchTermCourses", x => x.BatchTermCourseId);
+                    table.ForeignKey(
+                        name: "FK_BatchTermCourses_BatchTerms_BatchTermId",
+                        column: x => x.BatchTermId,
+                        principalTable: "BatchTerms",
+                        principalColumn: "BatchTermId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BatchTermCourses_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AcademicTypes",
                 columns: new[] { "AcademicTypeId", "Name", "ShortName" },
@@ -231,23 +337,42 @@ namespace PrenticeApi.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Courses",
+                columns: new[] { "CourseId", "Code", "Name" },
+                values: new object[,]
+                {
+                    { 1, "MITM301", "Project Management and Business Info System" },
+                    { 2, "MITM302", "Computer Programming" },
+                    { 3, "MITM304", "Database Architecture and Administration" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Institutions",
                 columns: new[] { "InstitutionId", "Address", "ContactEmail", "Name", "PhoneNumber", "ShortName", "WebSite" },
                 values: new object[] { (short)1, "IIT, University of Dhaka, Dhaka, Bangladesh", "iit@du.ac.bd", "Institute of Information Technology, University of Dhaka", "8801779482994", "IIT, DU", "http://www.iit.du.ac.bd" });
 
             migrationBuilder.InsertData(
-                table: "ProgramTypes",
-                columns: new[] { "ProgramTypeId", "AcademicTypeId", "Name", "ShortName" },
+                table: "TermTypes",
+                columns: new[] { "TermTypeId", "Name" },
                 values: new object[,]
                 {
-                    { (short)1, (short)1, "Bachelor of Science in Software Engineering", "BSSE" },
-                    { (short)2, (short)2, "Master of Science in Software Engineering", "MSSE" },
-                    { (short)3, (short)2, "Master in Information Technology", "MIT" },
-                    { (short)4, (short)2, "Post Graduate Diploma in Information Technology", "PGDIT" },
-                    { (short)5, (short)3, "Web Design", "WD" },
-                    { (short)6, (short)3, "Web Programming", "WP" },
-                    { (short)7, (short)3, "Office Applications", "OA" },
-                    { (short)8, (short)3, "Matlab-Origin-LaTeX", "MOL" }
+                    { (short)1, "None" },
+                    { (short)2, "Semester" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ProgramTypes",
+                columns: new[] { "ProgramTypeId", "AcademicTypeId", "Name", "ShortName", "Terms" },
+                values: new object[,]
+                {
+                    { (short)1, (short)1, "Bachelor of Science in Software Engineering", "BSSE", (byte)8 },
+                    { (short)2, (short)2, "Master of Science in Software Engineering", "MSSE", (byte)4 },
+                    { (short)3, (short)2, "Master in Information Technology", "MIT", (byte)4 },
+                    { (short)4, (short)2, "Post Graduate Diploma in Information Technology", "PGDIT", (byte)4 },
+                    { (short)5, (short)3, "Web Design", "WD", (byte)1 },
+                    { (short)6, (short)3, "Web Programming", "WP", (byte)1 },
+                    { (short)7, (short)3, "Office Applications", "OA", (byte)1 },
+                    { (short)8, (short)3, "Matlab-Origin-LaTeX", "MOL", (byte)1 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -290,6 +415,31 @@ namespace PrenticeApi.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Batches_ProgramTypeId",
+                table: "Batches",
+                column: "ProgramTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BatchTermCourses_BatchTermId",
+                table: "BatchTermCourses",
+                column: "BatchTermId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BatchTermCourses_CourseId",
+                table: "BatchTermCourses",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BatchTerms_BatchId",
+                table: "BatchTerms",
+                column: "BatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BatchTerms_TermTypeId",
+                table: "BatchTerms",
+                column: "TermTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProgramTypes_AcademicTypeId",
                 table: "ProgramTypes",
                 column: "AcademicTypeId");
@@ -313,19 +463,34 @@ namespace PrenticeApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Courses");
+                name: "BatchTermCourses");
 
             migrationBuilder.DropTable(
                 name: "Institutions");
 
             migrationBuilder.DropTable(
-                name: "ProgramTypes");
+                name: "Students");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "BatchTerms");
+
+            migrationBuilder.DropTable(
+                name: "Courses");
+
+            migrationBuilder.DropTable(
+                name: "Batches");
+
+            migrationBuilder.DropTable(
+                name: "TermTypes");
+
+            migrationBuilder.DropTable(
+                name: "ProgramTypes");
 
             migrationBuilder.DropTable(
                 name: "AcademicTypes");

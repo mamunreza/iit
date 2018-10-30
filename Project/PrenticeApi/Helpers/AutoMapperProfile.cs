@@ -22,6 +22,15 @@ namespace PrenticeApi.Helpers
 
             CreateMap<Course, CourseDto>();
             CreateMap<CourseDto, Course>();
+
+            CreateMap<TermType, TermTypeDto>();
+            CreateMap<TermTypeDto, TermType>();
+
+            CreateMap<Batch, BatchDto>();
+            CreateMap<BatchDto, Batch>();
+
+            CreateMap<Student, StudentDto>();
+            CreateMap<StudentDto, Student>();
         }
     }
 }
