@@ -13,5 +13,6 @@ namespace PrenticeApi.Models
         public DateTime RegistrationDate { get; set; }
         public string RollNo { get; set; }
         public DateTime Dob { get; set; }
+        public ICollection<BatchTermStudent> BatchTermStudents { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace PrenticeApi.Models
 {
@@ -16,6 +17,7 @@ namespace PrenticeApi.Models
         public DbSet<Student> Students { get; set; }
         public DbSet<BatchTerm> BatchTerms { get; set; }
         public DbSet<BatchTermCourse> BatchTermCourses { get; set; }
+        public DbSet<BatchTermStudent> BatchTermStudents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +31,13 @@ namespace PrenticeApi.Models
     {
         public static void ApplyConfiguration(this ModelBuilder modelBuilder)
         {
+            foreach (var property in modelBuilder.Model.GetEntityTypes()
+            .SelectMany(t => t.GetProperties())
+            .Where(p => p.ClrType == typeof(decimal)))
+            {
+                property.Relational().ColumnType = "decimal(18, 2)";
+            }
+
             InstitutionConfiguration(modelBuilder);
             AcademicTypeConfiguration(modelBuilder);
             ProgramTypeConfiguration(modelBuilder);
@@ -144,11 +153,24 @@ namespace PrenticeApi.Models
                             .HasOne(x => x.Course)
                             .WithMany(y => y.BatchTermCourses)
                             .HasForeignKey(x => x.CourseId);
-            // modelBuilder.Entity<BatchCourse>()
-            //                 .HasOne(x => x.Batch)
-            //                 .WithMany(y => y.BatchCourses)
-            //                 .HasForeignKey(x => x.BatchId);
             modelBuilder.Entity<BatchTermCourse>().Property(x => x.BatchTermCourseId)
+                .ValueGeneratedOnAdd();
+        }
+        private static void BatchTermStudentConfiguration(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BatchTermStudent>()
+                            .HasOne(x => x.Course)
+                            .WithMany(y => y.BatchTermStudents)
+                            .HasForeignKey(x => x.CourseId);
+            modelBuilder.Entity<BatchTermStudent>()
+                            .HasOne(x => x.Student)
+                            .WithMany(y => y.BatchTermStudents)
+                            .HasForeignKey(x => x.StudentId);
+            modelBuilder.Entity<BatchTermStudent>()
+                            .HasOne(x => x.BatchTerm)
+                            .WithMany(y => y.BatchTermStudents)
+                            .HasForeignKey(x => x.BatchTermId);
+            modelBuilder.Entity<BatchTermStudent>().Property(x => x.BatchTermStudentId)
                 .ValueGeneratedOnAdd();
         }
         private static void BatchTermConfiguration(ModelBuilder modelBuilder)

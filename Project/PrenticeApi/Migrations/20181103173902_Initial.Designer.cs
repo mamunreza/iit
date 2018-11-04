@@ -10,7 +10,7 @@ using PrenticeApi.Models;
 namespace PrenticeApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20181029181004_Initial")]
+    [Migration("20181103173902_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -269,6 +269,9 @@ namespace PrenticeApi.Migrations
 
                     b.Property<int>("CourseId");
 
+                    b.Property<decimal>("CreditPoint")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.HasKey("BatchTermCourseId");
 
                     b.HasIndex("BatchTermId");
@@ -276,6 +279,29 @@ namespace PrenticeApi.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("BatchTermCourses");
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.BatchTermStudent", b =>
+                {
+                    b.Property<short>("BatchTermStudentId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BatchTermId");
+
+                    b.Property<int>("CourseId");
+
+                    b.Property<int>("StudentId");
+
+                    b.HasKey("BatchTermStudentId");
+
+                    b.HasIndex("BatchTermId");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("BatchTermStudents");
                 });
 
             modelBuilder.Entity("PrenticeApi.Models.Course", b =>
@@ -489,6 +515,24 @@ namespace PrenticeApi.Migrations
                     b.HasOne("PrenticeApi.Models.Course", "Course")
                         .WithMany("BatchTermCourses")
                         .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrenticeApi.Models.BatchTermStudent", b =>
+                {
+                    b.HasOne("PrenticeApi.Models.BatchTerm", "BatchTerm")
+                        .WithMany("BatchTermStudents")
+                        .HasForeignKey("BatchTermId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrenticeApi.Models.Course", "Course")
+                        .WithMany("BatchTermStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrenticeApi.Models.Student", "Student")
+                        .WithMany("BatchTermStudents")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

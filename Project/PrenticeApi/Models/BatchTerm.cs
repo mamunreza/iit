@@ -11,5 +11,6 @@ namespace PrenticeApi.Models
         public short TermTypeId { get; set; }
         public TermType TermType { get; set; }
         public ICollection<BatchTermCourse> BatchCourses { get; set; }
+        public ICollection<BatchTermStudent> BatchTermStudents { get; set; }
     }
 }

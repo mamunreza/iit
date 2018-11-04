@@ -307,7 +307,8 @@ namespace PrenticeApi.Migrations
                     BatchTermCourseId = table.Column<short>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     BatchTermId = table.Column<int>(nullable: false),
-                    CourseId = table.Column<int>(nullable: false)
+                    CourseId = table.Column<int>(nullable: false),
+                    CreditPoint = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -323,6 +324,39 @@ namespace PrenticeApi.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BatchTermStudents",
+                columns: table => new
+                {
+                    BatchTermStudentId = table.Column<short>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BatchTermId = table.Column<int>(nullable: false),
+                    CourseId = table.Column<int>(nullable: false),
+                    StudentId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BatchTermStudents", x => x.BatchTermStudentId);
+                    table.ForeignKey(
+                        name: "FK_BatchTermStudents_BatchTerms_BatchTermId",
+                        column: x => x.BatchTermId,
+                        principalTable: "BatchTerms",
+                        principalColumn: "BatchTermId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BatchTermStudents_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BatchTermStudents_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "StudentId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -440,6 +474,21 @@ namespace PrenticeApi.Migrations
                 column: "TermTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BatchTermStudents_BatchTermId",
+                table: "BatchTermStudents",
+                column: "BatchTermId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BatchTermStudents_CourseId",
+                table: "BatchTermStudents",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BatchTermStudents_StudentId",
+                table: "BatchTermStudents",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProgramTypes_AcademicTypeId",
                 table: "ProgramTypes",
                 column: "AcademicTypeId");
@@ -466,10 +515,10 @@ namespace PrenticeApi.Migrations
                 name: "BatchTermCourses");
 
             migrationBuilder.DropTable(
-                name: "Institutions");
+                name: "BatchTermStudents");
 
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "Institutions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -482,6 +531,9 @@ namespace PrenticeApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Courses");
+
+            migrationBuilder.DropTable(
+                name: "Students");
 
             migrationBuilder.DropTable(
                 name: "Batches");

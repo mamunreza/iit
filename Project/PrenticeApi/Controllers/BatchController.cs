@@ -31,8 +31,15 @@ namespace PrenticeApi.Controllers
             _service = service;
         }
         
-        [HttpPost("Initiate")]
+        [HttpPost("Create")]
         public async Task InitiateBatch(BatchDto batchDto)
+        {
+            var activeUser = HttpContext.User;
+            await _service.InitiateBatchAsync(batchDto, activeUser);
+        }
+
+        [HttpPost("RoutineCreate")]
+        public async Task InitiateRoutine(BatchDto batchDto)
         {
             var activeUser = HttpContext.User;
             await _service.InitiateBatchAsync(batchDto, activeUser);
